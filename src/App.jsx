@@ -2358,6 +2358,30 @@ function App() {
           ) : null}
         </dl>
 
+        {typeof wetOverfeedExtraCalories === 'number' && wetOverfeedExtraCalories > 0 ? (
+          <div
+            className={`meal-plan-alert ${
+              isMinorWetOverfeed ? 'meal-plan-alert--gentle' : 'meal-plan-alert--warning'
+            }`}
+            role="status"
+          >
+            <p className="meal-plan-alert__title">
+              {isMinorWetOverfeed
+                ? 'Almost a perfect match! 🤏'
+                : 'Wet food alone is above the daily calorie target'}
+            </p>
+            <p>
+              {isMinorWetOverfeed
+                ? `The wet food plan is about ${Math.round(wetOverfeedExtraCalories)} kcal over the target. It is a very small overage, but tightening it up will keep the plan closer to your cat's ideal range.`
+                : `The selected wet food adds about ${Math.round(
+                    wetFoodCalorieAllowance,
+                  )} kcal per day, which is ${Math.round(
+                    wetOverfeedExtraCalories,
+                  )} kcal above the suggested daily amount. Consider reducing the wet portion or adjusting the plan before following this menu.`}
+            </p>
+          </div>
+        ) : null}
+
         {showMenuMakerProgressCards
           ? menuMakerEntries.map((entry) => (
               <div

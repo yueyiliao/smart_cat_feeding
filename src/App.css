@@ -1270,6 +1270,34 @@
   margin: 0.35rem 0 0;
 }
 
+.meal-plan-alert {
+  margin-top: 1.2rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(190, 132, 63, 0.18);
+  line-height: 1.6;
+}
+
+.meal-plan-alert--gentle {
+  background: rgba(255, 248, 225, 0.9);
+  color: #6a5426;
+}
+
+.meal-plan-alert--warning {
+  background: rgba(255, 236, 236, 0.92);
+  border-color: rgba(183, 56, 56, 0.22);
+  color: #7a2f2f;
+}
+
+.meal-plan-alert__title {
+  margin: 0 0 0.45rem;
+  font-weight: 700;
+}
+
+.meal-plan-alert p {
+  margin: 0;
+}
+
 .progress-card {
   margin-top: 1.2rem;
   padding: 1rem 1.1rem;
