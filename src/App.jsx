@@ -461,6 +461,8 @@ function App() {
     useState(false)
   const [isGeriatricVetAlertDismissed, setIsGeriatricVetAlertDismissed] =
     useState(false)
+  const [isKittenWeightLossAlertDismissed, setIsKittenWeightLossAlertDismissed] =
+    useState(false)
   const [formData, setFormData] = useState({
     weight: '',
     weightUnit: 'lb',
@@ -489,12 +491,14 @@ function App() {
       setIsWetOverfeedAlertDismissed(false)
       setHasConfirmedGeriatricVetAlert(false)
       setIsGeriatricVetAlertDismissed(false)
+      setIsKittenWeightLossAlertDismissed(false)
     }
 
     if (name === 'healthGoal') {
       setIsWetOverfeedAlertDismissed(false)
       setHasConfirmedGeriatricVetAlert(false)
       setIsGeriatricVetAlertDismissed(false)
+      setIsKittenWeightLossAlertDismissed(false)
     }
 
     if (
@@ -579,6 +583,9 @@ function App() {
 
   const ageIsComplete =
     formData.age && (formData.age !== 'less-than-1' || formData.kittenAgeMonths)
+  const isYoungKitten =
+    formData.age === 'less-than-1' &&
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(formData.kittenAgeMonths)
   const isProfileComplete =
     Boolean(formData.weight) &&
     Boolean(ageIsComplete) &&
@@ -659,6 +666,15 @@ function App() {
       setShowIncompleteProfileReminder(false)
     }
   }, [isProfileComplete, showIncompleteProfileReminder])
+
+  useEffect(() => {
+    if (isYoungKitten && formData.healthGoal === 'lose') {
+      setFormData((current) => ({
+        ...current,
+        healthGoal: 'maintain',
+      }))
+    }
+  }, [formData.healthGoal, isYoungKitten])
 
   const applyDatabaseProduct = (product) => {
     setHasEnteredFoodSection(true)
@@ -767,6 +783,13 @@ function App() {
     [10, 11, 12].includes(kittenMonthValue) &&
     Boolean(formData.kittenAgeMonths)
   const showRibCheckModal = showRibCheckWarning && !isRibCheckDismissed
+  const showKittenWeightLossAlertModal =
+    showRibCheckWarning &&
+    ['yes', 'sort-of', 'nope', 'skip'].includes(formData.ribCheckResponse) &&
+    formData.healthGoal === 'lose' &&
+    !isKittenWeightLossAlertDismissed
+  const showKittenGrowthFirstNote =
+    showRibCheckWarning && formData.healthGoal === 'lose'
   const showGeriatricVetAlertModal =
     isGeriatricCat &&
     formData.healthGoal === 'lose' &&
@@ -1445,6 +1468,34 @@ function App() {
         </div>
       ) : null}
 
+      {showKittenWeightLossAlertModal ? (
+        <div className="modal-backdrop" role="presentation">
+          <div
+            className="modal-card modal-card--warning"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="kitten-weight-loss-title"
+          >
+            <button
+              type="button"
+              className="modal-close"
+              aria-label="Close kitten weight loss warning"
+              onClick={() => setIsKittenWeightLossAlertDismissed(true)}
+            >
+              ×
+            </button>
+            <p className="section-kicker">Kitten Growth Guardrail</p>
+            <h2 id="kitten-weight-loss-title">Weight loss needs extra caution</h2>
+            <p className="modal-warning-copy">
+              🐈 Your kitten is nearly an adult but may still be technically growing.
+              We recommend keeping weight loss very gradual. Consult your vet before
+              starting a strict diet to ensure their bones and muscles have the fuel
+              they need to finish strong!
+            </p>
+          </div>
+        </div>
+      ) : null}
+
       {showWetOverfeedAlertModal ? (
         <div className="modal-backdrop" role="presentation">
           <div
@@ -1672,11 +1723,13 @@ function App() {
                     value={formData.healthGoal}
                     onChange={handleChange}
                   >
-                    {healthGoalOptions.map((option) => (
+                    {healthGoalOptions
+                      .filter((option) => !(isYoungKitten && option.value === 'lose'))
+                      .map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
-                    ))}
+                      ))}
                   </select>
                 </label>
               </form>
@@ -2433,6 +2486,23 @@ function App() {
               </div>
             ))
           : null}
+
+        {!hasExtremeWeightBlock &&
+        (showKittenGrowthFirstNote ? (
+          <div className="info-box" role="note">
+            <p className="info-box__title">🐾 Growth First!</p>
+            <p>
+              Since your kitten is still in their big development phase, we&apos;ve
+              calculated a specialized maintenance plan to fuel their growing bones
+              and muscles.
+            </p>
+            <p>
+              Professional weight loss programs are reserved for adult cats (1 year+).
+              If you&apos;re concerned about their current weight, your vet is the best
+              partner to create a custom growth-safe strategy.
+            </p>
+          </div>
+        ) : null)}
 
         {!hasExtremeWeightBlock &&
         ((isAdultCat && adultFeedingPlan?.type === 'weight-loss') ||
