@@ -119,23 +119,13 @@ const seniorHealthGoalFactors = {
   gain: 1.2,
 }
 
-const geriatricDerMultipliers = {
-  yes: {
-    indoor: 1.2,
-    'indoor-outdoor': 1.2,
-    outdoor: 1.4,
-  },
-  no: {
-    indoor: 1.4,
-    'indoor-outdoor': 1.4,
-    outdoor: 1.4,
-  },
-}
+const geriatricDerMultiplier = 1.35
 
 const geriatricHealthGoalFactors = {
   maintain: 1.0,
-  gain: 1.2,
 }
+
+const geriatricWeightGainMultiplier = 1.1
 
 const roundToSingleDecimal = (value) => {
   if (typeof value !== 'number' || Number.isNaN(value)) {
@@ -253,22 +243,16 @@ export const calculateSeniorFeedingPlan = (
   }
 }
 
-export const getGeriatricDerMultiplier = (neuteredStatus, activityLevel) => {
-  return geriatricDerMultipliers[neuteredStatus]?.[activityLevel] ?? null
+export const getGeriatricDerMultiplier = () => {
+  return geriatricDerMultiplier
 }
 
-export const calculateGeriatricDer = (rer, neuteredStatus, activityLevel) => {
+export const calculateGeriatricDer = (rer) => {
   if (typeof rer !== 'number' || Number.isNaN(rer) || rer <= 0) {
     return null
   }
 
-  const multiplier = getGeriatricDerMultiplier(neuteredStatus, activityLevel)
-
-  if (!multiplier) {
-    return null
-  }
-
-  return rer * multiplier
+  return rer * geriatricDerMultiplier
 }
 
 export const calculateGeriatricFeedingPlan = (
@@ -290,6 +274,13 @@ export const calculateGeriatricFeedingPlan = (
   if (healthGoal === 'lose') {
     return {
       type: 'vet-alert',
+    }
+  }
+
+  if (healthGoal === 'gain') {
+    return {
+      type: 'standard',
+      dailyAmount: roundToSingleDecimal(der * geriatricWeightGainMultiplier),
     }
   }
 

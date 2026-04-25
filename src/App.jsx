@@ -11,7 +11,6 @@ import {
   convertWeightToKg,
   getAdultDerMultiplier,
   getCatAgeCategory,
-  getGeriatricDerMultiplier,
   getSeniorDerMultiplier,
 } from './calculations'
 import { foodCatalog } from './foodCatalog'
@@ -752,15 +751,7 @@ function App() {
     seniorDer,
     formData.healthGoal,
   )
-  const geriatricDerMultiplier = getGeriatricDerMultiplier(
-    formData.neuteredStatus,
-    formData.activityLevel,
-  )
-  const geriatricDer = calculateGeriatricDer(
-    rer,
-    formData.neuteredStatus,
-    formData.activityLevel,
-  )
+  const geriatricDer = calculateGeriatricDer(rer)
   const geriatricFeedingPlan = calculateGeriatricFeedingPlan(
     rer,
     geriatricDer,
