@@ -2488,6 +2488,22 @@ function App() {
           : null}
 
         {!hasExtremeWeightBlock &&
+        isGeriatricCat &&
+        formData.healthGoal === 'lose' &&
+        geriatricFeedingPlan?.type === 'vet-alert' ? (
+          <div className="info-box" role="note">
+            <p className="info-box__title">A Note on Senior Care 12+: 🐾</p>
+            <p>
+              For geriatric cats (cats over 12 years old), weight management is
+              delicate. Sudden calorie restriction can mask or complicate
+              underlying health issues common in golden years. We have provided
+              a maintenance plan, but please consult your vet before starting
+              any weight loss regimen for your cat.
+            </p>
+          </div>
+        ) : null}
+
+        {!hasExtremeWeightBlock &&
         (showKittenGrowthFirstNote ? (
           <div className="info-box" role="note">
             <p className="info-box__title">🐾 Growth First!</p>
